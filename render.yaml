@@ -1,0 +1,9 @@
+services:
+  - type: web
+    name: nexus-sentinel-policy-adapter
+    runtime: docker
+    plan: free
+    autoDeployTrigger: commit
+    healthCheckPath: /health
+    dockerfilePath: ./Dockerfile
+    dockerContext: .

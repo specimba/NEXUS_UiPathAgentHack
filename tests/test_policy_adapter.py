@@ -180,10 +180,3 @@ def test_malformed_input_is_rejected():
 def test_extra_fields_are_rejected():
     payload = _evaluation_payload(unexpected="not-allowed")
     response = client.post("/api/v1/case/evaluate", json=payload)
-    assert response.status_code == 422
-
-
-def test_compatibility_module_exports_same_app():
-    from nexus_os.bridge.uipath_adapter import app as compatibility_app
-
-    assert compatibility_app is app

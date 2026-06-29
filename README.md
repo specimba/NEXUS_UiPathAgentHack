@@ -49,7 +49,7 @@ The adapter rejects unknown fields and retains only a SHA-256 input fingerprint 
 ## Run Locally
 
 ```bash
-python -m pip install -r nexus_uipath_bridge/requirements.txt
+python -m pip install -r requirements.txt
 uvicorn nexus_uipath_bridge.app:app --host 127.0.0.1 --port 8080
 python -m pytest tests/bridge/test_uipath_sentinel_contract.py -q
 ```
@@ -59,7 +59,7 @@ Port `8080` is the standalone demo default. Port `7352` remains reserved for the
 ## Container
 
 ```bash
-docker build -f nexus_uipath_bridge/Dockerfile -t nexus-sentinel .
+docker build -t nexus-sentinel .
 docker run --rm -p 8080:8080 nexus-sentinel
 ```
 

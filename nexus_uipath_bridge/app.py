@@ -88,7 +88,7 @@ class CaseVerificationRequest(StrictModel):
     request_id: Annotated[str, Field(min_length=3, max_length=128)]
     case_id: Annotated[str, Field(min_length=3, max_length=128)]
     remediation_id: Annotated[str, Field(min_length=3, max_length=128)]
-    evaluation_audit_id: Annotated[str, Field(min_length=8, max_length=128)] | None = None
+    evaluation_audit_id: Annotated[str, Field(min_length=8, max_length=128)]
     attempt: Annotated[int, Field(ge=1, le=3)] = 1
     checks: VerificationChecks
 
@@ -102,7 +102,7 @@ class CaseVerificationResponse(StrictModel):
     attempt: int
     max_attempts: Literal[3] = 3
     retry_exhausted: bool
-    evaluation_audit_id: str | None
+    evaluation_audit_id: str
     audit_id: str
     policy_version: Literal["sentinel-1.0"] = POLICY_VERSION
 

@@ -110,12 +110,16 @@ def test_duplicate_request_with_changed_payload_is_conflict():
 
 
 def test_verify_failure_reopens_investigation():
+    evaluation = client.post(
+        "/api/v1/case/evaluate", json=_evaluation_payload(request_id="eval-verify-fail")
+    ).json()
     body = client.post(
         "/api/v1/case/verify",
         json={
             "request_id": "verify-001",
             "case_id": "CASE-001",
             "remediation_id": "rem-001",
+            "evaluation_audit_id": evaluation["audit_id"],
             "checks": {
                 "model_identity_matches": False,
                 "policy_tests_pass": True,
@@ -131,12 +135,16 @@ def test_verify_failure_reopens_investigation():
 
 
 def test_verify_success_closes_case():
+    evaluation = client.post(
+        "/api/v1/case/evaluate", json=_evaluation_payload(request_id="eval-verify-pass")
+    ).json()
     body = client.post(
         "/api/v1/case/verify",
         json={
             "request_id": "verify-002",
             "case_id": "CASE-001",
             "remediation_id": "rem-002",
+            "evaluation_audit_id": evaluation["audit_id"],
             "checks": {
                 "model_identity_matches": True,
                 "policy_tests_pass": True,
@@ -230,12 +238,16 @@ def test_verification_rejects_cross_case_audit_link():
 
 
 def test_third_failed_verification_escalates_without_reentry():
+    evaluation = client.post(
+        "/api/v1/case/evaluate", json=_evaluation_payload(request_id="eval-verify-exhausted")
+    ).json()
     response = client.post(
         "/api/v1/case/verify",
         json={
             "request_id": "verify-exhausted",
             "case_id": "CASE-001",
             "remediation_id": "rem-exhausted",
+            "evaluation_audit_id": evaluation["audit_id"],
             "attempt": 3,
             "checks": {
                 "model_identity_matches": False,

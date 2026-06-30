@@ -1,0 +1,6 @@
+{
+  "Name": "NEXUSSentinelRobot",
+  "ProjectType": "Process",
+  "Description": "NEXUS Sentinel Maestro Case policy adapter workflow",
+  "MainFile": "Main.xaml"
+}

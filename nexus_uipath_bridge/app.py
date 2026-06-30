@@ -88,6 +88,8 @@ class CaseVerificationRequest(StrictModel):
     request_id: Annotated[str, Field(min_length=3, max_length=128)]
     case_id: Annotated[str, Field(min_length=3, max_length=128)]
     remediation_id: Annotated[str, Field(min_length=3, max_length=128)]
+    evaluation_audit_id: Annotated[str, Field(min_length=8, max_length=128)] | None = None
+    attempt: Annotated[int, Field(ge=1, le=3)] = 1
     checks: VerificationChecks
 
 
@@ -97,6 +99,10 @@ class CaseVerificationResponse(StrictModel):
     reason_codes: list[str]
     recommended_stage: str
     reentry_stage: str | None
+    attempt: int
+    max_attempts: Literal[3] = 3
+    retry_exhausted: bool
+    evaluation_audit_id: str | None
     audit_id: str
     policy_version: Literal["sentinel-1.0"] = POLICY_VERSION
 
@@ -266,12 +272,18 @@ def _verification_outcome(request: CaseVerificationRequest) -> dict[str, object]
     if not request.checks.evidence_attached:
         reasons.append("VERIFICATION_EVIDENCE_MISSING")
     verified = not reasons
+    retry_exhausted = not verified and request.attempt >= 3
     return {
         "case_id": request.case_id,
         "verified": verified,
         "reason_codes": reasons,
-        "recommended_stage": "Closure" if verified else "Rework Required",
-        "reentry_stage": None if verified else "Investigation",
+        "recommended_stage": (
+            "Closure" if verified else "Escalated" if retry_exhausted else "Rework Required"
+        ),
+        "reentry_stage": None if verified or retry_exhausted else "Investigation",
+        "attempt": request.attempt,
+        "retry_exhausted": retry_exhausted,
+        "evaluation_audit_id": request.evaluation_audit_id,
     }
 
 
@@ -307,6 +319,16 @@ def evaluate_case(request: CaseEvaluationRequest) -> CaseEvaluationResponse:
 
 @app.post("/api/v1/case/verify", response_model=CaseVerificationResponse)
 def verify_case(request: CaseVerificationRequest) -> CaseVerificationResponse:
+    if request.evaluation_audit_id is not None:
+        evaluation = audit_store.get(request.evaluation_audit_id)
+        if (
+            evaluation.event_type != "case_evaluation"
+            or evaluation.case_id != request.case_id
+        ):
+            raise HTTPException(
+                status_code=409,
+                detail="evaluation audit does not belong to this case",
+            )
     fingerprint = _fingerprint(request)
     existing = audit_store.find_request(request.request_id, fingerprint)
     if existing is not None:

@@ -24,7 +24,10 @@ def test_main_xaml_is_well_formed_and_uses_http_activity():
     assert root.tag.endswith("Activity")
     text = path.read_text(encoding="utf-8")
     assert "ui:HttpClient" in text
-    assert "/api/v1/case/evaluate" in text
+    assert "/api/v1/case/" in text
+    assert "in_Operation" in text
+    assert "Reject Unsupported Operation" in text
+    assert "Invoke Sentinel Case Operation" in text
     assert "Fail Closed On Adapter Error" in text
     assert "SENTINEL_BASE_URL" in text
 
@@ -57,11 +60,15 @@ def test_bpmn_artifact_is_well_formed_and_contains_recovery_contract():
         "Policy Verdict",
         "AI Release Manager Approval",
         "Execute Bounded Remediation",
-        "Verification Passed?",
+        "Verification Outcome",
         "Rework Required",
         "Security Escalation",
         "Verified Closure",
     ):
         assert marker in text
     assert 'default="Flow_Hold"' in text
-    assert 'default="Flow_Passed"' in text
+    assert '${verdict == "ALLOW"}' in text
+    assert '${verdict == "HOLD"}' in text
+    assert '${verdict == "DENY"}' in text
+    assert "${retryCount &lt; maxRetries}" in text
+    assert "${retryCount &gt;= maxRetries}" in text

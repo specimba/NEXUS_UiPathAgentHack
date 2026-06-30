@@ -70,6 +70,7 @@ Deploy the container to a public HTTPS service, then configure `SENTINEL_BASE_UR
 - `samples/03-verification-failed.json`: first verification forces re-entry.
 - `samples/04-verification-passed.json`: final closure gate.
 - `uipath/NEXUSSentinelBPMN/Process.bpmn`: portable source corresponding to the published process.
+- docs/LEVEL2_ORCHESTRATION_CONTRACT.md: runtime routing, lineage, bounded retry, and honest approval gates.
 - `UIPATH_BUILD_GUIDE.md`: exact Maestro BPMN tasks, gateways, and deployment steps.
 - `DEMO_SCRIPT.md`: resettable five-minute presentation sequence.
 - `SUBMISSION.md`: Devpost-ready copy.

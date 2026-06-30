@@ -7,20 +7,27 @@
     <userTask id="Task_Approval" name="AI Release Manager Approval"/>
     <serviceTask id="Task_Remediation" name="Execute Bounded Remediation"/>
     <serviceTask id="Task_Verify" name="Verify Recovery"/>
-    <exclusiveGateway id="Gateway_Verification" name="Verification Passed?" default="Flow_Passed"/>
+    <exclusiveGateway id="Gateway_Verification" name="Verification Outcome"/>
+    <exclusiveGateway id="Gateway_Retry" name="Retry Budget Available?"/>
     <task id="Task_Rework" name="Rework Required"/>
+    <task id="Task_IncrementRetry" name="Increment Verification Attempt"/>
+    <serviceTask id="Task_AuditEscalation" name="Escalate and Record Audit"/>
     <endEvent id="End_Closure" name="Verified Closure"/>
     <endEvent id="End_Escalation" name="Security Escalation"/>
     <sequenceFlow id="Flow_Start" sourceRef="Start_Incident" targetRef="Task_Evaluate"/>
     <sequenceFlow id="Flow_Evaluate" sourceRef="Task_Evaluate" targetRef="Gateway_Verdict"/>
-    <sequenceFlow id="Flow_Hold" name="HOLD" sourceRef="Gateway_Verdict" targetRef="Task_Approval"/>
-    <sequenceFlow id="Flow_Allow" name="ALLOW" sourceRef="Gateway_Verdict" targetRef="Task_Remediation"><conditionExpression xsi:type="tFormalExpression">false</conditionExpression></sequenceFlow>
-    <sequenceFlow id="Flow_Deny" name="DENY" sourceRef="Gateway_Verdict" targetRef="End_Escalation"><conditionExpression xsi:type="tFormalExpression">false</conditionExpression></sequenceFlow>
+    <sequenceFlow id="Flow_Hold" name="HOLD" sourceRef="Gateway_Verdict" targetRef="Task_Approval"><conditionExpression xsi:type="tFormalExpression">${verdict == "HOLD"}</conditionExpression></sequenceFlow>
+    <sequenceFlow id="Flow_Allow" name="ALLOW" sourceRef="Gateway_Verdict" targetRef="Task_Remediation"><conditionExpression xsi:type="tFormalExpression">${verdict == "ALLOW"}</conditionExpression></sequenceFlow>
+    <sequenceFlow id="Flow_Deny" name="DENY" sourceRef="Gateway_Verdict" targetRef="Task_AuditEscalation"><conditionExpression xsi:type="tFormalExpression">${verdict == "DENY"}</conditionExpression></sequenceFlow>
     <sequenceFlow id="Flow_Approved" name="Approved" sourceRef="Task_Approval" targetRef="Task_Remediation"/>
     <sequenceFlow id="Flow_Remediated" sourceRef="Task_Remediation" targetRef="Task_Verify"/>
     <sequenceFlow id="Flow_Verified" sourceRef="Task_Verify" targetRef="Gateway_Verification"/>
-    <sequenceFlow id="Flow_Passed" name="Passed" sourceRef="Gateway_Verification" targetRef="End_Closure"/>
-    <sequenceFlow id="Flow_Failed" name="Failed" sourceRef="Gateway_Verification" targetRef="Task_Rework"><conditionExpression xsi:type="tFormalExpression">false</conditionExpression></sequenceFlow>
-    <sequenceFlow id="Flow_Retry" name="Retry" sourceRef="Task_Rework" targetRef="Task_Evaluate"/>
+    <sequenceFlow id="Flow_Passed" name="Passed" sourceRef="Gateway_Verification" targetRef="End_Closure"><conditionExpression xsi:type="tFormalExpression">${verified == true}</conditionExpression></sequenceFlow>
+    <sequenceFlow id="Flow_Failed" name="Failed" sourceRef="Gateway_Verification" targetRef="Gateway_Retry"><conditionExpression xsi:type="tFormalExpression">${verified == false}</conditionExpression></sequenceFlow>
+    <sequenceFlow id="Flow_RetryAvailable" name="Retry" sourceRef="Gateway_Retry" targetRef="Task_Rework"><conditionExpression xsi:type="tFormalExpression">${retryCount &lt; maxRetries}</conditionExpression></sequenceFlow>
+    <sequenceFlow id="Flow_RetryExhausted" name="Escalate" sourceRef="Gateway_Retry" targetRef="Task_AuditEscalation"><conditionExpression xsi:type="tFormalExpression">${retryCount &gt;= maxRetries}</conditionExpression></sequenceFlow>
+    <sequenceFlow id="Flow_Rework" sourceRef="Task_Rework" targetRef="Task_IncrementRetry"/>
+    <sequenceFlow id="Flow_Retry" name="Retry Verification" sourceRef="Task_IncrementRetry" targetRef="Task_Verify"/>
+    <sequenceFlow id="Flow_Escalated" sourceRef="Task_AuditEscalation" targetRef="End_Escalation"/>
   </process>
 </definitions>

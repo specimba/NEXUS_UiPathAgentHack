@@ -180,3 +180,73 @@ def test_malformed_input_is_rejected():
 def test_extra_fields_are_rejected():
     payload = _evaluation_payload(unexpected="not-allowed")
     response = client.post("/api/v1/case/evaluate", json=payload)
+
+
+def test_verification_can_link_to_evaluation_audit():
+    evaluation = client.post(
+        "/api/v1/case/evaluate", json=_evaluation_payload(request_id="eval-linked")
+    ).json()
+    response = client.post(
+        "/api/v1/case/verify",
+        json={
+            "request_id": "verify-linked",
+            "case_id": "CASE-001",
+            "remediation_id": "rem-linked",
+            "evaluation_audit_id": evaluation["audit_id"],
+            "attempt": 1,
+            "checks": {
+                "model_identity_matches": False,
+                "policy_tests_pass": True,
+                "service_health_pass": True,
+                "evidence_attached": True,
+            },
+        },
+    )
+    assert response.status_code == 200
+    assert response.json()["evaluation_audit_id"] == evaluation["audit_id"]
+    assert response.json()["retry_exhausted"] is False
+
+
+def test_verification_rejects_cross_case_audit_link():
+    evaluation = client.post(
+        "/api/v1/case/evaluate", json=_evaluation_payload(request_id="eval-wrong-case")
+    ).json()
+    response = client.post(
+        "/api/v1/case/verify",
+        json={
+            "request_id": "verify-wrong-case",
+            "case_id": "CASE-OTHER",
+            "remediation_id": "rem-other",
+            "evaluation_audit_id": evaluation["audit_id"],
+            "checks": {
+                "model_identity_matches": True,
+                "policy_tests_pass": True,
+                "service_health_pass": True,
+                "evidence_attached": True,
+            },
+        },
+    )
+    assert response.status_code == 409
+
+
+def test_third_failed_verification_escalates_without_reentry():
+    response = client.post(
+        "/api/v1/case/verify",
+        json={
+            "request_id": "verify-exhausted",
+            "case_id": "CASE-001",
+            "remediation_id": "rem-exhausted",
+            "attempt": 3,
+            "checks": {
+                "model_identity_matches": False,
+                "policy_tests_pass": True,
+                "service_health_pass": True,
+                "evidence_attached": True,
+            },
+        },
+    )
+    assert response.status_code == 200
+    body = response.json()
+    assert body["retry_exhausted"] is True
+    assert body["recommended_stage"] == "Escalated"
+    assert body["reentry_stage"] is None

@@ -1,33 +1,35 @@
 # UiPath Studio Artifact
 
-`NEXUSSentinelRobot` is the coded-automation side of the Maestro BPMN demo. It performs one bounded operation: submit a case-evaluation payload to the NEXUS Sentinel Policy Adapter and return the structured JSON response to UiPath.
+`NEXUSSentinelRobot` is the coded-automation side of the Maestro BPMN demo. It performs one bounded adapter operation and returns the structured JSON response to UiPath. `in_Operation` accepts only `evaluate` or `verify`; any other value fails closed before network access.
 
 ## Open And Run
 
 1. Open `uipath/NEXUSSentinelRobot/project.json` in UiPath Studio 2026.
 2. Restore `UiPath.System.Activities` and `UiPath.WebAPI.Activities` dependencies.
-3. Set environment variable `SENTINEL_BASE_URL` to the public HTTPS adapter URL, or supply `in_BaseUrl` as a workflow argument.
-4. Run `Main.xaml`.
-5. Confirm the Output panel contains HTTP `200` and a `HOLD` verdict for the default incident.
+3. Set `SENTINEL_BASE_URL` or supply `in_BaseUrl`.
+4. Set `in_Operation` to `evaluate` or `verify` and provide the corresponding JSON in `in_CasePayload`.
+5. Run `Main.xaml` and confirm HTTP `200` plus the expected structured result.
 
 The local fallback is `http://127.0.0.1:8080`. No credential is stored in the project.
 
 ## Maestro Mapping
 
-Use this process as the external/API task invoked from the Investigation stage. Deserialize `out_Response` and map:
+Use the workflow for both policy evaluation and post-remediation verification. Deserialize `out_Response` and map:
 
-| JSON field | Maestro field |
-|---|---|
-| `verdict` | `verdict` |
-| `risk_level` | `riskLevel` |
-| `reason_codes` | `reasonCodes` |
-| `recommended_stage` | transition selector |
-| `audit_id` | `auditId` |
+| Operation | JSON field | Maestro variable |
+|---|---|---|
+| evaluate | `verdict` | `evalVerdict` |
+| evaluate | `risk_level` | `riskLevel` |
+| evaluate | `required_human_role` | `requiredHumanRole` |
+| evaluate | `audit_id` | `auditId` |
+| verify | `verified` | `verified` |
+| verify | `recommended_stage` | transition selector |
+| verify | `reentry_stage` | `reentryStage` |
+| verify | `retry_exhausted` | escalation selector |
+| verify | `audit_id` | `verificationAuditId` |
 
-Any non-2xx response throws and must route the case to `Escalated`; it must never default to `ALLOW`.
+Any non-2xx response throws and must route the process to `Escalated`; it must never default to `ALLOW` or closure.
 
-## Demo URL
+## Deployment
 
-For the live recording session on June 30, 2026, the certified quick-tunnel URL is supplied through `SENTINEL_BASE_URL`. It is intentionally not committed because Cloudflare quick-tunnel URLs are ephemeral.
-
-For judging after submission, deploy the repository using `render.yaml` and update the Maestro API Workflow to the durable Render URL.
+The durable adapter is `https://nexus-sentinel-policy-adapter.onrender.com`. The repository contains `render.yaml`; no ephemeral tunnel URL is committed.

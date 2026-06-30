@@ -2,6 +2,7 @@
   <x:Members>
     <x:Property Name="in_BaseUrl" Type="InArgument(x:String)" />
     <x:Property Name="in_CasePayload" Type="InArgument(x:String)" />
+    <x:Property Name="in_Operation" Type="InArgument(x:String)" />
     <x:Property Name="out_Response" Type="OutArgument(x:String)" />
     <x:Property Name="out_StatusCode" Type="OutArgument(x:Int32)" />
   </x:Members>
@@ -64,6 +65,8 @@
     <Sequence.Variables>
       <Variable x:TypeArguments="x:String" Name="EffectiveBaseUrl" />
       <Variable x:TypeArguments="x:String" Name="EffectivePayload" />
+      <Variable x:TypeArguments="x:String" Name="EffectiveOperation" />
+      <Variable x:TypeArguments="x:String" Name="EffectiveEndpoint" />
     </Sequence.Variables>
     <Assign DisplayName="Resolve Sentinel Base URL" sap2010:WorkflowViewState.IdRef="Assign_1">
       <Assign.To>
@@ -73,6 +76,17 @@
         <InArgument x:TypeArguments="x:String">[If(Not String.IsNullOrWhiteSpace(in_BaseUrl), in_BaseUrl, If(Not String.IsNullOrWhiteSpace(Environment.GetEnvironmentVariable(&quot;SENTINEL_BASE_URL&quot;)), Environment.GetEnvironmentVariable(&quot;SENTINEL_BASE_URL&quot;), &quot;http://127.0.0.1:8080&quot;))]</InArgument>
       </Assign.Value>
     </Assign>
+    <Assign DisplayName="Resolve Sentinel Operation" sap2010:WorkflowViewState.IdRef="Assign_Operation">
+      <Assign.To><OutArgument x:TypeArguments="x:String">[EffectiveOperation]</OutArgument></Assign.To>
+      <Assign.Value><InArgument x:TypeArguments="x:String">[If(String.IsNullOrWhiteSpace(in_Operation), "evaluate", in_Operation.Trim.ToLowerInvariant)]</InArgument></Assign.Value>
+    </Assign>
+    <If Condition="[EffectiveOperation &lt;&gt; &quot;evaluate&quot; AndAlso EffectiveOperation &lt;&gt; &quot;verify&quot;]" DisplayName="Reject Unsupported Operation" sap2010:WorkflowViewState.IdRef="If_Operation">
+      <If.Then><Throw Exception="[New ArgumentException(&quot;in_Operation must be evaluate or verify&quot;)]" sap2010:WorkflowViewState.IdRef="Throw_Operation" /></If.Then>
+    </If>
+    <Assign DisplayName="Resolve Sentinel Endpoint" sap2010:WorkflowViewState.IdRef="Assign_Endpoint">
+      <Assign.To><OutArgument x:TypeArguments="x:String">[EffectiveEndpoint]</OutArgument></Assign.To>
+      <Assign.Value><InArgument x:TypeArguments="x:String">[EffectiveBaseUrl.TrimEnd("/"c) + "/api/v1/case/" + EffectiveOperation]</InArgument></Assign.Value>
+    </Assign>
     <Assign DisplayName="Resolve Case Payload" sap2010:WorkflowViewState.IdRef="Assign_2">
       <Assign.To>
         <OutArgument x:TypeArguments="x:String">[EffectivePayload]</OutArgument>
@@ -81,7 +95,7 @@
         <InArgument x:TypeArguments="x:String">[If(Not String.IsNullOrWhiteSpace(in_CasePayload), in_CasePayload, &quot;{&quot;&quot;request_id&quot;&quot;:&quot;&quot;studio-demo-001&quot;&quot;,&quot;&quot;case_id&quot;&quot;:&quot;&quot;CASE-STUDIO-001&quot;&quot;,&quot;&quot;stage&quot;&quot;:&quot;&quot;Investigation&quot;&quot;,&quot;&quot;requested_model&quot;&quot;:&quot;&quot;glm-5.2&quot;&quot;,&quot;&quot;observed_model&quot;&quot;:&quot;&quot;fallback-model&quot;&quot;,&quot;&quot;privileged_remediation&quot;&quot;:true,&quot;&quot;human_approval&quot;&quot;:false,&quot;&quot;evidence&quot;&quot;:{&quot;&quot;change_ticket&quot;&quot;:&quot;&quot;CHG-STUDIO-001&quot;&quot;,&quot;&quot;model_manifest_hash&quot;&quot;:null,&quot;&quot;rollback_plan&quot;&quot;:null,&quot;&quot;test_report_hash&quot;&quot;:null},&quot;&quot;evidence_notes&quot;&quot;:&quot;&quot;Runtime model echo differs from approved release.&quot;&quot;}&quot;)]</InArgument>
       </Assign.Value>
     </Assign>
-    <ui:HttpClient AcceptFormat="JSON" AuthenticationType="None" Body="[EffectivePayload]" BodyFormat="application/json" ClientCertificate="[Nothing]" ClientCertificatePassword="[Nothing]" DisplayName="Evaluate Sentinel Case" EnableSSLVerification="True" EndPoint="[EffectiveBaseUrl.TrimEnd(&quot;/&quot;c) + &quot;/api/v1/case/evaluate&quot;]" Method="POST" Result="[out_Response]" StatusCode="[out_StatusCode]" TimeoutMS="30000" sap2010:WorkflowViewState.IdRef="HttpClient_1">
+    <ui:HttpClient AcceptFormat="JSON" AuthenticationType="None" Body="[EffectivePayload]" BodyFormat="application/json" ClientCertificate="[Nothing]" ClientCertificatePassword="[Nothing]" DisplayName="Invoke Sentinel Case Operation" EnableSSLVerification="True" EndPoint="[EffectiveEndpoint]" Method="POST" Result="[out_Response]" StatusCode="[out_StatusCode]" TimeoutMS="30000" sap2010:WorkflowViewState.IdRef="HttpClient_1">
       <ui:HttpClient.Attachments>
         <scg:Dictionary x:TypeArguments="x:String, InArgument(x:String)" />
       </ui:HttpClient.Attachments>

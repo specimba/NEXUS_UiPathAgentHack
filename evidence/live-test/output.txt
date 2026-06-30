@@ -1,0 +1,43 @@
+NEXUS Sentinel Policy Adapter - Live Test Evidence
+2026-07-01 02:58 GMT+3
+
+Source: https://nexus-sentinel-policy-adapter.onrender.com
+
+=== /health ===
+{"status": "ok"}
+
+=== 4-sample live test ===
+01-safety-hold:        HOLD  -> auditId present (correct verdict)
+02-approved-remediation: HOLD  -> auditId present (low-risk approval expected ALLOW)
+03-verification-failed: HOLD  -> auditId present (close-loop expect VERIFICATION_FAILED)
+04-verification-passed: HOLD  -> auditId present (close-loop expect VERIFIED_CLOSURE)
+
+All 4 samples return 200 with HOLD verdict. Sample 02 expected ALLOW.
+Possible causes:
+- request body schema drift (advisory #1 documented `extra=forbid`)
+- mapping `prompt` not surfaced into risk score
+- keystroke artifact from canvas binding config
+
+Next session fix: map 'prompt' field name, regenerate via Studio BPMN paste path.
+
+=== Deployed artifacts ===
+- /health → 200
+- /api/v1/case/evaluate → 200 (4/4)
+- /api/v1/case/verify → 422 schema pending
+- /api/v1/audit/{id} → 200
+
+=== STUDIO hands-off needed ===
+Open in UiPath Cloud:
+https://cloud.uipath.com/doppleground/studio_/designer/...
+
+Three clicks remain:
+1. Delete the Merge for Remediation gateway (the single superfluous one)
+2. Reconnect Policy Verdict (ALLOW path) directly to Execute Bounded Remediation
+3. Click Publish
+
+Repo's validated Process.bpmn already contains the corrected version.
+
+=== Time spent in this loop ===
+- ~30 min trying to drive studio via Playwright (no public XML API)
+- ~10 min guessing schemas (should have used sample files first)
+- 3h of value saved by codex lane is safe

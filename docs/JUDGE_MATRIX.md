@@ -4,8 +4,8 @@
 |---|---|---|---|
 | Business impact | AI-release mismatch, evidence hold, bounded remediation, and verification recovery | Demonstrated in adapter samples and BPMN | Add enterprise KPI data after pilot |
 | Platform usage | Studio Web Maestro BPMN, Solutions Management package/deploy, Orchestrator job trace | Verified live on June 30, 2026 | Approval User Task is not Action App-bound |
-| Technical execution | Deterministic policy API, idempotency, strict schemas, fail-closed UiPath workflow, 18 tests | Verified | Durable audit storage and webhook auth are future work |
-| Completeness | Public repo, Apache-2.0, Render API, BPMN source, build guide, demo/deck scripts | Repository ready | Public video and deck links pending |
+| Technical execution | Deterministic policy API, idempotency, strict schemas, evaluation-to-verification lineage, bounded retry, `30 passed, 2 xfailed` | Verified | Durable audit storage, webhook auth, and two obfuscation gaps are future work |
+| Completeness | Public repo, Apache-2.0, Render API, BPMN source, build guide, 4:25 demo, and deck | Repository ready | Public video URL and final Devpost submission pending |
 | Creativity | Governance adapter separates advisory policy from UiPath execution authority | Implemented | Add Test Cloud pack later |
 | Coding agents | Codex implementation/integration; Gemini planning/review; Kilo Code and Cline UiPath support | Documented | Capture visible coding-agent evidence in video |
 
@@ -20,3 +20,5 @@
 ## Accuracy Boundary
 
 The approval task is modeled but currently auto-completes because no Action App is bound. The submission must not claim a live Action Center approval.
+
+The injection checks are deterministic indicators with adversarial coverage, not a complete boundary-aware semantic defense. Homoglyph and zero-width-space bypasses remain documented expected failures.

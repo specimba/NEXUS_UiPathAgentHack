@@ -12,7 +12,7 @@ Show the published `NEXUS Sentinel AI Release Recovery` diagram. Point out Evalu
 Open the public Render OpenAPI page and run the safety-hold sample. Highlight `HOLD`, `HIGH`, `MODEL_ECHO_MISMATCH`, `EVIDENCE_INCOMPLETE`, and the audit ID. Explain that the adapter never executes remediation and stores only a fingerprint plus structured outcome in process memory.
 
 ## 2:10-3:05 - Failure and recovery
-Run `03-verification-failed.json`, showing `verified: false` and `reentry_stage: Investigation`. Then run `04-verification-passed.json`, showing closure. Use the BPMN diagram to connect these outcomes to the failed and passed paths.
+First run an evaluation and copy its `audit_id` into the verification sample's `evaluation_audit_id`. Run `03-verification-failed.json`, showing `verified: false` and `reentry_stage: Investigation`. Then run `04-verification-passed.json` with the same evaluation lineage, showing closure. Use the BPMN diagram to connect these outcomes to the failed and passed paths.
 
 ## 3:05-3:50 - Published execution evidence
 Show UiPath Solutions Management package `Solution 1` version `1.0.0`, successful deployment, and the successful Orchestrator trace through incident, evaluation, verdict, approval, remediation, verification, gateway, and closure.

@@ -4,7 +4,7 @@
 
 NEXUS Sentinel Case explored a governed AI-release incident workflow: an external deterministic policy adapter evaluates case evidence; UiPath Maestro is intended to own case stages, decisions, human approval, and re-entry; failed verification returns the case to investigation; and audit identifiers preserve decision lineage without retaining raw prompts.
 
-The public adapter is live at `https://nexus-sentinel-policy-adapter.onrender.com`. The public repository and Studio workflow prove the policy contract, but the team did not complete and verify the full Maestro Cloud case before the submission deadline.
+The public adapter is live at `https://nexus-sentinel-policy-adapter.onrender.com`. A baseline Maestro package was published and executed, while the later Level 2 adapter-binding and Action App approval work remained incomplete.
 
 ## Evidence-Backed Findings
 
@@ -48,6 +48,35 @@ Requested improvement:
 - Provide a hackathon preflight page that verifies tenant, license, Agent Builder, Maestro, Action Center, API workflow, publish, and run permissions.
 - Guarantee at least one publish-and-run path for the event duration, or state the missing entitlement before builders start.
 
+### 5. Validation must prove variable materialization
+
+Autopilot reported that process variables and gateway expressions had been created, and Studio Web showed zero validation issues. A deployed Level 2 run nevertheless faulted at the verdict gateway with:
+
+```text
+No condition for an outgoing flow was met.
+Unknown identifier 'evalVerdict'
+```
+
+The instance Global Variables view contained no corresponding value.
+
+Requested improvement:
+
+- Validate every referenced identifier against the persisted process-variable model.
+- Validate service-task output mappings before publish.
+- Warn when Autopilot describes a change that is not present in the saved artifact.
+- Offer a publish-time contract report listing variables, producers, consumers, and unresolved references.
+
+### 6. Draft and deployed versions need an explicit diff
+
+During recovery, the active Studio Web draft exposed a start-event-only document while the deployed package still retained the earlier multi-stage process. Duplicate editor/browser sessions also produced fragile ownership and read-only transitions.
+
+Requested improvement:
+
+- Show the active draft version, deployed version, and package version together.
+- Provide a visual draft-to-deployment BPMN and variable diff.
+- Add a safe "restore deployed version to draft" action.
+- Make editor ownership and duplicate-session state explicit before edits occur.
+
 ## What Worked
 
 - Maestro's case/process model is a strong fit for explicit human approval, exception stages, and recovery loops.
@@ -56,7 +85,7 @@ Requested improvement:
 
 ## Highest-Impact Change
 
-Ship a documented headless publish flow and a first-class generic HTTP task. Together they close the largest gap between coding-agent output and a governed, repeatable Automation Cloud deployment.
+Ship a documented headless publish flow, a first-class generic HTTP task, and publish-time variable/output contract validation. Together they close the largest gap between coding-agent output and a governed, repeatable Automation Cloud deployment.
 
 ## Accuracy Note
 

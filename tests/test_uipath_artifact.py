@@ -72,3 +72,16 @@ def test_bpmn_artifact_is_well_formed_and_contains_recovery_contract():
     assert '${verdict == "DENY"}' in text
     assert "${retryCount &lt; maxRetries}" in text
     assert "${retryCount &gt;= maxRetries}" in text
+
+
+def test_verification_samples_require_evaluation_lineage():
+    for name in ("03-verification-failed.json", "04-verification-passed.json"):
+        payload = json.loads((ROOT / "samples" / name).read_text(encoding="utf-8"))
+        assert payload["evaluation_audit_id"] == "REPLACE_WITH_EVALUATION_AUDIT_ID"
+        assert payload["attempt"] == 1
+        assert set(payload["checks"]) == {
+            "model_identity_matches",
+            "policy_tests_pass",
+            "service_health_pass",
+            "evidence_attached",
+        }

@@ -57,7 +57,7 @@ The largest design challenge was avoiding orchestration theater. We rejected a d
 - Idempotent requests and sanitized audit retrieval.
 - No dependency on private NEXUS services, local GPUs, or model availability.
 - Literature-grounded governance design backed by five peer-reviewed papers.
-- Adversarial probe test suite validating boundary-aware injection defense.
+- Adversarial probe suite covering instruction/data confusion, with homoglyph and zero-width-space bypasses retained as explicit expected failures.
 
 ## What We Learned
 
@@ -70,7 +70,7 @@ The research deep dive revealed that our independently-derived architecture maps
 NEXUS Sentinel's design is grounded in recent agent-security and AI-governance research. Five papers map directly onto its architecture:
 
 - **Progent: Programmable Privilege Control for LLM Agents** (UC Berkeley, Dawn Song et al.) — Sentinel's deterministic ALLOW/HOLD/DENY contract implements monotonic confinement: the agent's action space can only shrink without explicit human approval. ALLOW = narrowing (auto-advance), HOLD = expansion (requires AI Release Manager), DENY = blocked.
-- **BIPIA: Benchmarking and Defending Against Indirect Prompt Injection** (Microsoft) — Evidence fields are treated as data, never as actionable instructions. The adapter's injection detection enforces boundary awareness between user-controlled content and policy logic.
+- **BIPIA: Benchmarking and Defending Against Indirect Prompt Injection** (Microsoft) — Evidence fields are schema-bounded data and never executable instructions. The current deterministic tripwire covers common patterns; two obfuscation bypasses remain documented rather than being presented as solved.
 - **INJECAGENT: Benchmarking Indirect Prompt Injections in Tool-Integrated Agents** (UIUC) — ReAct GPT-4 is attackable 24% of the time. This motivates the DENY-on-injection path and the adversarial probe suite included in the test suite.
 - **A Survey of Safety and Trustworthiness of LLMs through Verification and Validation** (Huang et al., 2024) — Frames safety as a lifecycle V&V process. Sentinel's Verify Recovery gate and bounded retry loop implement runtime falsification before closure.
 - **Steering LLMs via Scalable Interactive Oversight** (Fudan NLP) — Decomposes AI oversight into low-burden human decisions. The AI Release Manager Approval node is exactly this: a human confirms or rejects an expansion of the agent's remediation authority.

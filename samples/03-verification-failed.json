@@ -2,6 +2,8 @@
   "request_id": "req-verify-001",
   "case_id": "CASE-2026-9821",
   "remediation_id": "rem-sentinel-01",
+  "evaluation_audit_id": "REPLACE_WITH_EVALUATION_AUDIT_ID",
+  "attempt": 1,
   "checks": {
     "model_identity_matches": false,
     "policy_tests_pass": true,

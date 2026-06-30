@@ -9,7 +9,7 @@ The committed cut (`assets/video/nexus-sentinel-narration.mp3`, 4:25) has good, 
 - Captions: `assets/video/nexus-sentinel-captions.srt` / `.vtt` (176 lines, timed) — burn in for accessibility.
 - Live endpoint: https://nexus-sentinel-policy-adapter.onrender.com (keep-warm active).
 - Full BPMN: uipath/NEXUSSentinelBPMN/Process.bpmn (12 nodes, 15 conditional flows).
-- Adapter source + 14 passing tests; the adversarial L2 probe transcript.
+- Adapter source plus a reproduced `30 passed, 2 xfailed` test result; the expected failures document two known obfuscation gaps.
 
 ## The shot list — each narration beat gets REAL footage behind it
 | Time | Narration beat (existing audio) | WHAT TO SHOW on screen (the fix) |
@@ -21,8 +21,8 @@ The committed cut (`assets/video/nexus-sentinel-narration.mp3`, 4:25) has good, 
 | 1:35–2:02 | Human approval / HOLD | Maestro **process instance** view: token paused at the AI Release Manager approval task |
 | 2:02–2:35 | Verify → second gateway, rework loop | Fire `/verify` fail → show **Rework Required / reentry:Investigation**; then `/verify` pass → **Closure** |
 | 2:35–3:05 | Audit / provenance | `GET /api/v1/audit/{id}` returns record with **sha256 fingerprint + UTC + policy_version**; show 404 on missing id |
-| 3:05–3:45 | **Where NEXUS expertise lives** | Cut to the **codex/agent workspace**: git log (9 commits), the adapter source, 14 tests passing, the adversarial L2 review doc scrolling |
-| 3:45–4:25 | Close: governed AI ops on UiPath | Back to Maestro: re-run one instance end-to-end (ALLOW→remediate→verify→closure), audit id shown. Honest caveat caption: "approval gate now bound (was auto-complete in v1.0.1)." |
+| 3:05–3:45 | **Where NEXUS expertise lives** | Cut to the **codex/agent workspace**: git history, adapter source, `30 passed, 2 xfailed`, and the adversarial probe file |
+| 3:45–4:25 | Close: governed AI ops on UiPath | Back to Maestro and the verified v1.0.0 execution trace. Honest caveat caption: "Approval is modeled but not Action App-bound; durable audit storage is roadmap work." |
 
 ## Capture mechanics (fast, no fancy editing)
 1. **OBS** (you already run it on port-9222 Chrome) — one scene, 1080p, capture the browser + a terminal window side by side.
@@ -32,7 +32,7 @@ The committed cut (`assets/video/nexus-sentinel-narration.mp3`, 4:25) has good, 
 
 ## Honesty rule (keeps us credible — and is itself feedback-award material)
 - Show the live probes actually returning — don't fake JSON.
-- One caption disclosing the v1.0.1 cloud gap and that it's now fixed (verdict→gateway bound, real approval) — judges trust teams who show the seam.
+- Disclose that the approval task is modeled but not Action App-bound. Do not state that real approval or v1.0.1 variable binding is fixed without a fresh successful instance.
 
 ## Dependency
 This plan's strongest 6 shots need the **full BPMN visible in the cloud Maestro canvas** (the injection). Until that lands, we can still film the live-adapter + agent-workspace shots (3 of 9 beats) immediately.

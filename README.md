@@ -75,6 +75,7 @@ Deploy the container to a public HTTPS service, then configure `SENTINEL_BASE_UR
 - `DEMO_SCRIPT.md`: resettable five-minute presentation sequence.
 - `SUBMISSION.md`: Devpost-ready copy.
 - `PRESENTATION_OUTLINE.md`: slide-by-slide deck content.
+- `PRODUCT_FEEDBACK.md`: evidence-backed UiPath product feedback and corrections.
 
 ## Safety Boundaries
 

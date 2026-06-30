@@ -83,7 +83,7 @@ Deploy the container to a public HTTPS service, then configure `SENTINEL_BASE_UR
 [Local MP4 with AI narration and burned captions](assets/video/NEXUS-Sentinel-AgentHack-Demo.mp4)
 
 ## Presentation Deck
-`nhttps://docs.google.com/presentation/d/16B00BABNwdsIpOygh_VtlineLtHP6P8VHPyjqxlnMP0/edit
+https://docs.google.com/presentation/d/16B00BABNwdsIpOygh_VtlineLtHP6P8VHPyjqxlnMP0/edit
 
 ## Safety Boundaries
 

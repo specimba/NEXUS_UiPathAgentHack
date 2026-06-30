@@ -1,0 +1,21 @@
+{
+  "name": "generate-project-handoff-documentation",
+  "version": "1.0.0",
+  "license": "internal",
+  "runtime": "simulang",
+  "parameters": [
+    "projectPaths",
+    "handoffContext",
+    "currentStatus",
+    "p0Work",
+    "p1Work",
+    "laneAssignment",
+    "endStateChecklist",
+    "liveEndpoints",
+    "criticalGotchas",
+    "antiPatterns",
+    "projectLabel",
+    "outputDir",
+    "toolsDir"
+  ]
+}

@@ -1,0 +1,14 @@
+{
+  "name": "search-and-synthesize-research-papers",
+  "version": "1.0.0",
+  "license": "internal",
+  "runtime": "simulang",
+  "parameters": [
+    "papersDir",
+    "projectContext",
+    "themesJson",
+    "topPerTheme",
+    "toolsDir",
+    "outputDir"
+  ]
+}

@@ -46,14 +46,15 @@ Use this slide deck structure to prepare your hackathon presentation.
 *   **Key Points:**
     *   Development speed boosted by combining low-code components with specialized coding agents (Codex, Gemini, Kilo Code, and Cline).
     *   Coding agents read codebase schemas to generate contract tests, build JSON-RPC payloads, and scaffold the Fast API service.
-    *   Contract tests and artifact checks verify the public adapter and UiPath sources.
-*   **Visual:** Command line terminal showing clean test run (`18 passed`).
+    *   Adversarial test suite validating boundary-aware injection defense (INJECAGENT-style).
+*   **Visual:** Command line terminal showing clean test run (`29 passed`).
 
 ---
 
 ## Slide 6: Business ROI & Production Feasibility
 *   **Slide Title:** Value Delivered to the Enterprise
 *   **Key Points:**
+    *   *Literature-Grounded:* Architecture maps 1:1 onto peer-reviewed research (Progent's monotonic privilege confinement, Microsoft's BIPIA boundary awareness, Huang's safety V&V).
     *   *Bounded execution:* The policy adapter advises; UiPath remains the execution authority.
     *   *Auditability:* Every transition generates a secure hash record (`audit_id`) for retrospective compliance.
     *   *Enterprise Feasibility:* Fully decoupled from GPU requirements, allowing immediate, lightweight deployment to standard container services (Docker).

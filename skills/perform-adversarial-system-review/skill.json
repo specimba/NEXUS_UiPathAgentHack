@@ -1,0 +1,14 @@
+{
+  "name": "perform-adversarial-system-review",
+  "version": "1.0.0",
+  "license": "internal",
+  "runtime": "simulang",
+  "parameters": [
+    "systemName",
+    "appSourcePath",
+    "endpointBase",
+    "samplesDir",
+    "toolsDir",
+    "outputDir"
+  ]
+}

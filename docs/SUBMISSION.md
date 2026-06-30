@@ -56,10 +56,26 @@ The largest design challenge was avoiding orchestration theater. We rejected a d
 - Strict `ALLOW/HOLD/DENY` API contract with stable reason codes.
 - Idempotent requests and sanitized audit retrieval.
 - No dependency on private NEXUS services, local GPUs, or model availability.
+- Literature-grounded governance design backed by five peer-reviewed papers.
+- Adversarial probe test suite validating boundary-aware injection defense.
 
 ## What We Learned
 
 Enterprise agent governance is strongest when policy advice, human accountability, execution, and verification are separate responsibilities. Maestro provides the durable control plane needed to keep those responsibilities synchronized as the case changes.
+
+The research deep dive revealed that our independently-derived architecture maps precisely to recently published patterns: Progent's monotonic confinement, BIPIA's boundary awareness, and Fudan's scalable interactive oversight. This convergence validates the design rather than the papers inspiring it retroactively.
+
+## Research Grounding
+
+NEXUS Sentinel's design is grounded in recent agent-security and AI-governance research. Five papers map directly onto its architecture:
+
+- **Progent: Programmable Privilege Control for LLM Agents** (UC Berkeley, Dawn Song et al.) — Sentinel's deterministic ALLOW/HOLD/DENY contract implements monotonic confinement: the agent's action space can only shrink without explicit human approval. ALLOW = narrowing (auto-advance), HOLD = expansion (requires AI Release Manager), DENY = blocked.
+- **BIPIA: Benchmarking and Defending Against Indirect Prompt Injection** (Microsoft) — Evidence fields are treated as data, never as actionable instructions. The adapter's injection detection enforces boundary awareness between user-controlled content and policy logic.
+- **INJECAGENT: Benchmarking Indirect Prompt Injections in Tool-Integrated Agents** (UIUC) — ReAct GPT-4 is attackable 24% of the time. This motivates the DENY-on-injection path and the adversarial probe suite included in the test suite.
+- **A Survey of Safety and Trustworthiness of LLMs through Verification and Validation** (Huang et al., 2024) — Frames safety as a lifecycle V&V process. Sentinel's Verify Recovery gate and bounded retry loop implement runtime falsification before closure.
+- **Steering LLMs via Scalable Interactive Oversight** (Fudan NLP) — Decomposes AI oversight into low-burden human decisions. The AI Release Manager Approval node is exactly this: a human confirms or rejects an expansion of the agent's remediation authority.
+
+Supporting references on threat taxonomy (IEEE Access 2026), lifecycle threat mapping, and cross-jurisdiction governance principles informed the broader design.
 
 ## What's Next
 
@@ -67,6 +83,7 @@ Enterprise agent governance is strongest when policy advice, human accountabilit
 - Bind the approval User Task to an Action App for a live Action Center handoff.
 - Add signed webhook authentication and tenant isolation.
 - Connect verified NEXUS GuardRouter evidence through an optional normalized adapter.
+- Implement the gated AI Remediation Proposer: an agentic node where AI drafts remediation plans under monotonic confinement — the action space can only shrink without human approval (Progent × Fudan scalable oversight).
 - Add Test Cloud regression packs for case transitions and third-party agent failures.
 - Track operational measures such as time-to-triage, hold reasons, rework frequency, and mean time to verified recovery.
 

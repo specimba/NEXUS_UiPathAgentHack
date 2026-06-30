@@ -30,7 +30,7 @@
 *   Show [01-safety-hold.json](samples/01-safety-hold.json) on screen.
 *   Submit the payload:
     ```bash
-    curl -X POST http://127.0.0.1:8080/api/v1/case/evaluate -H "Content-Type: application/json" -d @nexus_uipath_bridge/samples/01-safety-hold.json
+    curl -X POST http://127.0.0.1:8080/api/v1/case/evaluate -H "Content-Type: application/json" -d @samples/01-safety-hold.json
     ```
 *   Point out the JSON response: `verdict: HOLD`, `recommended_stage: Safety Hold`.
 *   Switch to **UiPath Action Center** showing the pending approval task created for the `AI_RELEASE_MANAGER` role.
@@ -51,7 +51,7 @@
 *   Show [02-approved-remediation.json](samples/02-approved-remediation.json).
 *   Submit the approved payload:
     ```bash
-    curl -X POST http://127.0.0.1:8080/api/v1/case/evaluate -H "Content-Type: application/json" -d @nexus_uipath_bridge/samples/02-approved-remediation.json
+    curl -X POST http://127.0.0.1:8080/api/v1/case/evaluate -H "Content-Type: application/json" -d @samples/02-approved-remediation.json
     ```
 *   Point out the response: `verdict: ALLOW`, `recommended_stage: Remediation`.
 *   Show the FastAPI server stdout logging: `audit record created` and `idempotency check passed`.
@@ -71,13 +71,13 @@
 *   Show [03-verification-failed.json](samples/03-verification-failed.json).
 *   Submit the verification payload:
     ```bash
-    curl -X POST http://127.0.0.1:8080/api/v1/case/verify -H "Content-Type: application/json" -d @nexus_uipath_bridge/samples/03-verification-failed.json
+    curl -X POST http://127.0.0.1:8080/api/v1/case/verify -H "Content-Type: application/json" -d @samples/03-verification-failed.json
     ```
 *   Point out the response: `verified: false`, `reentry_stage: Investigation`.
 *   Show [04-verification-passed.json](samples/04-verification-passed.json).
 *   Submit the final payload:
     ```bash
-    curl -X POST http://127.0.0.1:8080/api/v1/case/verify -H "Content-Type: application/json" -d @nexus_uipath_bridge/samples/04-verification-passed.json
+    curl -X POST http://127.0.0.1:8080/api/v1/case/verify -H "Content-Type: application/json" -d @samples/04-verification-passed.json
     ```
 *   Point out: `verified: true`, `recommended_stage: Closure`.
 *   Show the audit retrieval: `curl http://127.0.0.1:8080/api/v1/audit/{audit_id}` showing the complete event timeline.

@@ -77,6 +77,10 @@ Deploy the container to a public HTTPS service, then configure `SENTINEL_BASE_UR
 - `PRODUCT_FEEDBACK.md`: evidence-backed UiPath product feedback and corrections.
 - `JUDGE_MATRIX.md`: verified evidence mapped to the judging criteria.
 
+## Demo Video
+
+[Local MP4 with AI narration and burned captions](assets/video/NEXUS-Sentinel-AgentHack-Demo.mp4)
+
 ## Presentation Deck
 `nhttps://docs.google.com/presentation/d/16B00BABNwdsIpOygh_VtlineLtHP6P8VHPyjqxlnMP0/edit
 

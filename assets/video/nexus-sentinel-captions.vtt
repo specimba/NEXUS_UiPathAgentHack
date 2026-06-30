@@ -1,0 +1,176 @@
+1
+00:00:00,100 --> 00:00:08,600
+NEXUS Sentinel Recovery is a governed AI release incident workflow built for UiPath AgentHack Track Two, Maestro BPMN.
+
+2
+00:00:08,550 --> 00:00:13,089
+Enterprise AI releases do not fail in one predictable way.
+
+3
+00:00:13,089 --> 00:00:17,786
+The requested model can differ from the model actually returned by a provider.
+
+4
+00:00:17,786 --> 00:00:20,457
+Required evidence can be incomplete.
+
+5
+00:00:20,457 --> 00:00:24,984
+A privileged remediation can be proposed without accountable approval.
+
+6
+00:00:24,984 --> 00:00:28,852
+Even after remediation, verification can fail.
+
+7
+00:00:28,852 --> 00:00:37,563
+A production control plane must detect each condition, stop unsafe execution, and recover without losing the process history.
+
+8
+00:00:37,563 --> 00:00:40,734
+Our architecture separates authority from advice.
+
+9
+00:00:40,734 --> 00:00:45,642
+UiPath Automation Cloud is the control and execution plane.
+
+10
+00:00:45,642 --> 00:00:55,444
+Maestro BPMN owns the process, every gateway, the approval step, remediation, verification, rework, and closure.
+
+11
+00:00:55,444 --> 00:00:59,944
+UiPath Solutions Management packages and deploys the workflow.
+
+12
+00:00:59,944 --> 00:01:04,681
+Orchestrator starts the job and exposes a per-node execution trace.
+
+13
+00:01:04,681 --> 00:01:08,800
+The NEXUS Sentinel Policy Adapter is deliberately narrow.
+
+14
+00:01:08,800 --> 00:01:11,207
+It never performs remediation.
+
+15
+00:01:11,207 --> 00:01:19,155
+It receives structured release evidence and returns one of three deterministic verdicts: allow, hold, or deny.
+
+16
+00:01:19,155 --> 00:01:29,931
+Every response includes stable reason codes, a risk level, a recommended stage, a required human role when applicable, and an audit identifier.
+
+17
+00:01:29,931 --> 00:01:37,800
+Requests are strict, replay-safe, and retain only an input fingerprint plus the structured outcome in process memory.
+
+18
+00:01:37,800 --> 00:01:40,286
+Here is the live BPMN process.
+
+19
+00:01:40,286 --> 00:01:46,326
+An AI Release Incident moves to Evaluate Release Risk and then to the Policy Verdict gateway.
+
+20
+00:01:46,326 --> 00:01:50,431
+A hold routes through the AI Release Manager Approval user task.
+
+21
+00:01:50,431 --> 00:01:54,023
+Allow advances directly to bounded remediation.
+
+22
+00:01:54,023 --> 00:01:57,234
+Deny terminates at Security Escalation.
+
+23
+00:01:57,234 --> 00:02:02,063
+After remediation, Verify Recovery reaches a second gateway.
+
+24
+00:02:02,063 --> 00:02:05,115
+Passed verification closes the process.
+
+25
+00:02:05,115 --> 00:02:10,471
+Failed verification enters Rework Required and loops back to evaluation.
+
+26
+00:02:10,471 --> 00:02:14,471
+This is a recovery system, not a happy-path diagram.
+
+27
+00:02:14,471 --> 00:02:18,155
+The public adapter demonstrates the same contract.
+
+28
+00:02:18,155 --> 00:02:27,813
+Our safety-hold sample requests one model but observes another, omits required evidence, and requests privileged remediation without approval.
+
+29
+00:02:27,813 --> 00:02:36,050
+The response is hold, high risk, with model echo mismatch, evidence incomplete, and human approval required.
+
+30
+00:02:36,050 --> 00:02:40,510
+The approved sample returns allow and advances to remediation.
+
+31
+00:02:40,510 --> 00:02:45,918
+A failed verification returns rework required and re-entry to investigation.
+
+32
+00:02:45,918 --> 00:02:49,918
+A second verification succeeds and recommends closure.
+
+33
+00:02:49,918 --> 00:02:56,694
+Replaying the original request returns the same audit identifier, proving idempotent behavior.
+
+34
+00:02:56,694 --> 00:02:59,694
+The UiPath artifact is not conceptual.
+
+35
+00:02:59,694 --> 00:03:03,221
+Studio Web validates the model with zero issues.
+
+36
+00:03:03,221 --> 00:03:09,984
+Solutions Management published package Solution One, version one point zero point zero.
+
+37
+00:03:09,984 --> 00:03:12,550
+Deployment completed successfully.
+
+38
+00:03:12,550 --> 00:03:27,536
+A manual Orchestrator job then executed successfully through eight trace nodes: incident, evaluation, verdict, approval, remediation, verification, verification gateway, and verified closure.
+
+39
+00:03:27,536 --> 00:03:30,273
+We also state the current boundary honestly.
+
+40
+00:03:30,273 --> 00:03:38,734
+The approval step is a BPMN User Task, but it is not yet bound to an Action App, so it auto-completed in this verified run.
+
+41
+00:03:38,734 --> 00:03:44,510
+A live Action Center handoff is the next integration step, not a completed claim.
+
+42
+00:03:44,510 --> 00:04:00,155
+The public repository includes the FastAPI adapter, four sample incidents, the portable BPMN source, UiPath Windows workflow, Apache Two license, build guide, judge matrix, and eighteen passing tests.
+
+43
+00:04:00,155 --> 00:04:07,721
+Codex, Gemini, Kilo Code, and Cline contributed to implementation, review, and validation.
+
+44
+00:04:07,721 --> 00:04:25,405
+NEXUS Sentinel shows how UiPath can govern external AI services without surrendering execution authority: deterministic policy evidence, explicit accountability, bounded remediation, and recoverable verification failure in one auditable enterprise workflow.
+

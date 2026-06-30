@@ -1,8 +1,8 @@
-# Devpost Submission: NEXUS Sentinel Case
+# Devpost Submission: NEXUS Sentinel Recovery
 
 ## Track
 
-**Track 1: UiPath Maestro Case**
+**Track 2: UiPath Maestro BPMN**
 
 ## Inspiration
 
@@ -10,7 +10,7 @@ Enterprise AI incidents rarely follow a clean linear process. A release can repo
 
 ## What It Does
 
-NEXUS Sentinel Case orchestrates AI-release incident recovery in UiPath Maestro. A case moves through Intake, AI Triage, Investigation, Human Decision, Remediation, Verification, and Closure. Dynamic secondary stages handle Evidence Missing, Safety Hold, Rework Required, and Escalated outcomes.
+NEXUS Sentinel Recovery orchestrates AI-release incident recovery as an end-to-end UiPath Maestro BPMN process. The flow routes ALLOW, HOLD, and DENY verdicts, records an AI Release Manager approval step, executes bounded remediation, verifies the result, and loops failed verification back to rework.
 
 A lightweight NEXUS policy adapter evaluates model identity, evidence completeness, remediation privilege, approval state, and untrusted instruction indicators. It returns one of three deterministic verdicts:
 
@@ -24,12 +24,12 @@ Every result includes reason codes, the next recommended stage, the required hum
 
 UiPath Automation Cloud is the authoritative control and execution plane:
 
-- **Maestro Case** owns the lifecycle, dynamic stages, handoffs, and recovery loop.
-- **Case App** provides the operator view and evidence checklist.
-- **Agent Builder** creates structured triage observations.
-- **API Workflow** calls the public NEXUS policy adapter.
-- **Action Center** records high-risk approval decisions.
-- **Robot/API tasks** perform bounded remediation and verification.
+- **Maestro BPMN** owns the process, gateways, approval node, recovery loop, and closure.
+- **UiPath Solutions Management** packages and deploys the process.
+- **UiPath Orchestrator** starts the job and exposes a per-node execution trace.
+- **UiPath Studio Windows workflow** calls the public NEXUS policy adapter.
+- The approval User Task is modeled but is not yet bound to an Action App.
+- **Coding agents** Codex, Gemini, Kilo Code, and Cline supported implementation and validation.
 - **UiPath for Coding Agents** supports contract implementation and validation with Codex and Gemini.
 
 The NEXUS adapter is deliberately independent from local models and private infrastructure. It exposes four strict FastAPI endpoints, stores no raw request content, and provides replay-safe idempotency. This makes the live workflow reliable while preserving a clear path to deeper NEXUS guard integrations after the hackathon.
@@ -38,8 +38,8 @@ The NEXUS adapter is deliberately independent from local models and private infr
 
 1. An AI release case requests `glm-5.2`, but runtime evidence reports a fallback model and omits required artifacts.
 2. The adapter returns `HOLD`, `HIGH`, `MODEL_ECHO_MISMATCH`, and `EVIDENCE_INCOMPLETE`.
-3. Maestro moves the case to Safety Hold and creates an Action Center task for an AI Release Manager.
-4. The operator attaches evidence and approves a bounded remediation.
+3. Maestro routes the case through the AI Release Manager Approval user task.
+4. The approved path advances to bounded remediation.
 5. The first verification deliberately reports that model identity still mismatches.
 6. Maestro moves the case to Rework Required and re-enters Investigation.
 7. The corrected remediation passes all checks and the case closes with a complete audit trail.
@@ -51,7 +51,7 @@ The largest design challenge was avoiding orchestration theater. We rejected a d
 ## Accomplishments
 
 - Dynamic exception handling rather than a linear happy-path demo.
-- Human approval bound to privileged remediation.
+- An explicit human-approval BPMN task before privileged remediation.
 - Explicit failed-verification recovery and case re-entry.
 - Strict `ALLOW/HOLD/DENY` API contract with stable reason codes.
 - Idempotent requests and sanitized audit retrieval.
@@ -64,6 +64,7 @@ Enterprise agent governance is strongest when policy advice, human accountabilit
 ## What's Next
 
 - Persist audit records in an enterprise datastore.
+- Bind the approval User Task to an Action App for a live Action Center handoff.
 - Add signed webhook authentication and tenant isolation.
 - Connect verified NEXUS GuardRouter evidence through an optional normalized adapter.
 - Add Test Cloud regression packs for case transitions and third-party agent failures.
@@ -72,3 +73,7 @@ Enterprise agent governance is strongest when policy advice, human accountabilit
 ## Repository And License
 
 The public repository contains the policy adapter, tests, sanitized samples, UiPath build guide, architecture, and demo materials. It is licensed under Apache License 2.0. No private logs, credentials, model weights, or proprietary NEXUS research are included.
+
+## Presentation Deck
+
+https://docs.google.com/presentation/d/16B00BABNwdsIpOygh_VtlineLtHP6P8VHPyjqxlnMP0/edit

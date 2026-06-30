@@ -1,6 +1,6 @@
 # UiPath Studio Artifact
 
-`NEXUSSentinelRobot` is the coded-automation side of the Maestro Case demo. It performs one bounded operation: submit a case-evaluation payload to the NEXUS Sentinel Policy Adapter and return the structured JSON response to UiPath.
+`NEXUSSentinelRobot` is the coded-automation side of the Maestro BPMN demo. It performs one bounded operation: submit a case-evaluation payload to the NEXUS Sentinel Policy Adapter and return the structured JSON response to UiPath.
 
 ## Open And Run
 

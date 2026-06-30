@@ -46,3 +46,22 @@ def test_default_payload_exercises_safety_hold():
     assert "fallback-model" in text
     assert "privileged_remediation" in text
     assert "model_manifest_hash" in text
+
+
+def test_bpmn_artifact_is_well_formed_and_contains_recovery_contract():
+    path = ROOT / "uipath" / "NEXUSSentinelBPMN" / "Process.bpmn"
+    root = ElementTree.parse(path).getroot()
+    assert root.tag.endswith("definitions")
+    text = path.read_text(encoding="utf-8")
+    for marker in (
+        "Policy Verdict",
+        "AI Release Manager Approval",
+        "Execute Bounded Remediation",
+        "Verification Passed?",
+        "Rework Required",
+        "Security Escalation",
+        "Verified Closure",
+    ):
+        assert marker in text
+    assert 'default="Flow_Hold"' in text
+    assert 'default="Flow_Passed"' in text

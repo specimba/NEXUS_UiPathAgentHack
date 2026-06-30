@@ -1,11 +1,11 @@
-# Slide Deck Outline: NEXUS-Maestro Case Integration
+# Slide Deck Outline: NEXUS Sentinel Recovery
 
 Use this slide deck structure to prepare your hackathon presentation.
 
 ---
 
 ## Slide 1: Title Slide
-*   **Slide Title:** NEXUS-Maestro: Governed Enterprise Agentic Case Management
+*   **Slide Title:** NEXUS Sentinel: Governed AI Release Recovery
 *   **Subtitle:** Building Safe, Auditable, and Cost-Effective Agentic Workflows
 *   **Visual:** Architecture overview icon showing UiPath Cloud linked to NEXUS OS.
 *   **Presenter Notes:** Introduce the team and state the core focus: bridging the gap between local AI prototypes and production-grade governed automations.
@@ -25,36 +25,36 @@ Use this slide deck structure to prepare your hackathon presentation.
 ## Slide 3: The Architecture Split
 *   **Slide Title:** Control Plane vs. Reasoning Plane
 *   **Key Points:**
-    *   **Control & Execution Plane (UiPath Automation Cloud):** Orchestrates cases, triggers RPA robots, configures SLAs, and manages Human-in-the-Loop tasks via Action Center.
-    *   **Reasoning & Governance Plane (NEXUS OS):** Sanitized policy adapter evaluating release safety, model hash validation, and outputting tamper-proof audit fingerprints.
+    *   **Control & Execution Plane (UiPath Automation Cloud):** Runs the BPMN process, verdict gateways, approval step, recovery loop, and deployment trace.
+    *   **Reasoning & Governance Plane (NEXUS OS):** Sanitized policy adapter evaluating release safety, model hash validation, and outputting audit fingerprints.
 *   **Visual:** Mermaid diagram showing the flow between UiPath Cloud and the Policy Adapter.
 
 ---
 
-## Slide 4: Sentinel Case Workflow (Track 1)
+## Slide 4: Sentinel Recovery Workflow (Track 2)
 *   **Slide Title:** Governed AI-Release Recovery Flow
 *   **Key Points:**
     *   *Intake & Triage:* Robot ingests the release request; adapter identifies mismatched model hashes and issues a `HOLD` verdict.
-    *   *Human-in-the-Loop:* Action Center routes a task to the AI Release Manager to confirm the remediation.
+    *   *Human-in-the-Loop:* The BPMN flow contains an AI Release Manager Approval user task before remediation.
     *   *Remediation & Loop Recovery:* Robot executes safe rollback. If post-deployment verification fails, the case loops back to Investigation rather than failing silently.
-*   **Visual:** Screen capture of the Maestro Case stage view.
+*   **Visual:** Screen capture of the published Maestro BPMN process and Orchestrator trace.
 
 ---
 
 ## Slide 5: The Coding Agent Synergy
 *   **Slide Title:** Built with UiPath for Coding Agents
 *   **Key Points:**
-    *   Development speed boosted by combining low-code components with specialized coding agents (Codex, Cursor, Gemini CLI).
+    *   Development speed boosted by combining low-code components with specialized coding agents (Codex, Gemini, Kilo Code, and Cline).
     *   Coding agents read codebase schemas to generate contract tests, build JSON-RPC payloads, and scaffold the Fast API service.
-    *   Command line validation verified with the `@uipath/cli` (`uip`) tool.
-*   **Visual:** Command line terminal showing clean unit test compilation (`14 passed`).
+    *   Contract tests and artifact checks verify the public adapter and UiPath sources.
+*   **Visual:** Command line terminal showing clean test run (`18 passed`).
 
 ---
 
 ## Slide 6: Business ROI & Production Feasibility
 *   **Slide Title:** Value Delivered to the Enterprise
 *   **Key Points:**
-    *   *0% Execution Exposure:* Risk is neutralized at the policy gate before any agent triggers.
+    *   *Bounded execution:* The policy adapter advises; UiPath remains the execution authority.
     *   *Auditability:* Every transition generates a secure hash record (`audit_id`) for retrospective compliance.
     *   *Enterprise Feasibility:* Fully decoupled from GPU requirements, allowing immediate, lightweight deployment to standard container services (Docker).
 *   **Presenter Notes:** Summarize the submission and wrap up for Q&A.

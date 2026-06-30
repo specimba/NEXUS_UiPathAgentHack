@@ -1,0 +1,26 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<definitions xmlns="http://www.omg.org/spec/BPMN/20100524/MODEL" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" targetNamespace="https://github.com/specimba/NEXUS_UiPathAgentHack">
+  <process id="NEXUS_Sentinel_AI_Release_Recovery" name="NEXUS Sentinel AI Release Recovery" isExecutable="true">
+    <startEvent id="Start_Incident" name="AI Release Incident"/>
+    <serviceTask id="Task_Evaluate" name="Evaluate Release Risk"/>
+    <exclusiveGateway id="Gateway_Verdict" name="Policy Verdict" default="Flow_Hold"/>
+    <userTask id="Task_Approval" name="AI Release Manager Approval"/>
+    <serviceTask id="Task_Remediation" name="Execute Bounded Remediation"/>
+    <serviceTask id="Task_Verify" name="Verify Recovery"/>
+    <exclusiveGateway id="Gateway_Verification" name="Verification Passed?" default="Flow_Passed"/>
+    <task id="Task_Rework" name="Rework Required"/>
+    <endEvent id="End_Closure" name="Verified Closure"/>
+    <endEvent id="End_Escalation" name="Security Escalation"/>
+    <sequenceFlow id="Flow_Start" sourceRef="Start_Incident" targetRef="Task_Evaluate"/>
+    <sequenceFlow id="Flow_Evaluate" sourceRef="Task_Evaluate" targetRef="Gateway_Verdict"/>
+    <sequenceFlow id="Flow_Hold" name="HOLD" sourceRef="Gateway_Verdict" targetRef="Task_Approval"/>
+    <sequenceFlow id="Flow_Allow" name="ALLOW" sourceRef="Gateway_Verdict" targetRef="Task_Remediation"><conditionExpression xsi:type="tFormalExpression">false</conditionExpression></sequenceFlow>
+    <sequenceFlow id="Flow_Deny" name="DENY" sourceRef="Gateway_Verdict" targetRef="End_Escalation"><conditionExpression xsi:type="tFormalExpression">false</conditionExpression></sequenceFlow>
+    <sequenceFlow id="Flow_Approved" name="Approved" sourceRef="Task_Approval" targetRef="Task_Remediation"/>
+    <sequenceFlow id="Flow_Remediated" sourceRef="Task_Remediation" targetRef="Task_Verify"/>
+    <sequenceFlow id="Flow_Verified" sourceRef="Task_Verify" targetRef="Gateway_Verification"/>
+    <sequenceFlow id="Flow_Passed" name="Passed" sourceRef="Gateway_Verification" targetRef="End_Closure"/>
+    <sequenceFlow id="Flow_Failed" name="Failed" sourceRef="Gateway_Verification" targetRef="Task_Rework"><conditionExpression xsi:type="tFormalExpression">false</conditionExpression></sequenceFlow>
+    <sequenceFlow id="Flow_Retry" name="Retry" sourceRef="Task_Rework" targetRef="Task_Evaluate"/>
+  </process>
+</definitions>

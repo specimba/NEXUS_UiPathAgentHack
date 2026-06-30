@@ -1,6 +1,6 @@
-# NEXUS Sentinel Case
+# NEXUS Sentinel Recovery
 
-A governed AI-release incident recovery workflow for **UiPath AgentHack Track 1: Maestro Case**.
+A governed AI-release incident recovery workflow for **UiPath AgentHack Track 2: Maestro BPMN**.
 
 UiPath Automation Cloud is the control and execution plane. The NEXUS Sentinel Policy Adapter is a deterministic advisory service that evaluates release evidence, returns `ALLOW`, `HOLD`, or `DENY`, and emits an auditable case transition. It never performs remediation.
 
@@ -12,27 +12,25 @@ The reference case catches a model identity mismatch and incomplete evidence, ho
 
 ```mermaid
 flowchart LR
-    I["Robot or API Intake"] --> M["UiPath Maestro Case"]
-    M --> A["Agent Builder Triage"]
-    A --> P["NEXUS Policy Adapter"]
-    P -->|"HOLD or DENY"| H["Action Center Human Decision"]
-    P -->|"ALLOW"| R["Bounded Remediation Task"]
+    I["AI Release Incident"] --> M["UiPath Maestro BPMN"]
+    M --> P["NEXUS Policy Adapter"]
+    P -->|"HOLD"| H["AI Release Manager Approval"]
+    P -->|"DENY"| E["Security Escalation"]
+    P -->|"ALLOW"| R["Bounded Remediation"]
     H -->|"Approved"| R
-    R --> V["Verification Task"]
+    R --> V["Verification"]
     V -->|"Failed"| X["Rework Required"]
-    X --> M
-    V -->|"Passed"| C["Closure"]
-    P --> L["Audit Record"]
-    V --> L
+    X --> P
+    V -->|"Passed"| C["Verified Closure"]
 ```
 
 ## UiPath Components
 
-- Maestro Case and Case App own stages, transitions, SLAs, and case history.
-- Agent Builder produces a structured triage summary; it does not authorize remediation.
-- API Workflow invokes the policy adapter.
-- Action Center records the accountable human decision.
-- Robot/API tasks simulate bounded remediation and verification.
+- Maestro BPMN owns the process sequence, verdict gateways, approval step, remediation, verification, rework loop, and closure.
+- The published BPMN contains deterministic verdict routing and an explicit approval task.
+- UiPath Solutions Management packages and deploys the process.
+- The approval User Task is modeled but is not yet bound to an Action App.
+- Orchestrator exposes a successful per-node execution trace.
 - UiPath for Coding Agents is used to validate the adapter contract and deployment package.
 
 ## Public API
@@ -51,7 +49,7 @@ The adapter rejects unknown fields and retains only a SHA-256 input fingerprint 
 ```bash
 python -m pip install -r requirements.txt
 uvicorn nexus_uipath_bridge.app:app --host 127.0.0.1 --port 8080
-python -m pytest tests/bridge/test_uipath_sentinel_contract.py -q
+python -m pytest -q
 ```
 
 Port `8080` is the standalone demo default. Port `7352` remains reserved for the private NEXUS Brain API and is not used by this service.
@@ -71,11 +69,16 @@ Deploy the container to a public HTTPS service, then configure `SENTINEL_BASE_UR
 - `samples/02-approved-remediation.json`: corrected identity and approved action.
 - `samples/03-verification-failed.json`: first verification forces re-entry.
 - `samples/04-verification-passed.json`: final closure gate.
-- `UIPATH_BUILD_GUIDE.md`: exact Maestro fields, stages, and transitions.
+- `uipath/NEXUSSentinelBPMN/Process.bpmn`: portable source corresponding to the published process.
+- `UIPATH_BUILD_GUIDE.md`: exact Maestro BPMN tasks, gateways, and deployment steps.
 - `DEMO_SCRIPT.md`: resettable five-minute presentation sequence.
 - `SUBMISSION.md`: Devpost-ready copy.
 - `PRESENTATION_OUTLINE.md`: slide-by-slide deck content.
 - `PRODUCT_FEEDBACK.md`: evidence-backed UiPath product feedback and corrections.
+- `JUDGE_MATRIX.md`: verified evidence mapped to the judging criteria.
+
+## Presentation Deck
+`nhttps://docs.google.com/presentation/d/16B00BABNwdsIpOygh_VtlineLtHP6P8VHPyjqxlnMP0/edit
 
 ## Safety Boundaries
 

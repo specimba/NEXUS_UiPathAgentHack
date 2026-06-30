@@ -1,7 +1,7 @@
 {
   "name": "NEXUSSentinelRobot",
   "projectId": "60707d67-fb1d-4db2-b238-f5b79097ec5a",
-  "description": "UiPath activity bridge for the NEXUS Sentinel Maestro Case",
+  "description": "UiPath activity bridge for the NEXUS Sentinel Maestro BPMN",
   "main": "Main.xaml",
   "dependencies": {
     "UiPath.System.Activities": "[26.6.1]",

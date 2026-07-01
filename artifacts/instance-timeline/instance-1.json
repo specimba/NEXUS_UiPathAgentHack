@@ -1,0 +1,233 @@
+{
+  "instance_id": "instance-1",
+  "endpoint": "https://nexus-sentinel-policy-adapter.onrender.com",
+  "generated_utc": "2026-07-01T00:04:47.517613+00:00",
+  "runtime_seconds": 2.641,
+  "verdict_chain": [
+    "HOLD",
+    "ALLOW",
+    "VERIFICATION_FAILED",
+    "VERIFICATION_PASSED"
+  ],
+  "audit_chain_integrity": {
+    "ok": true,
+    "evaluate_audit_ids": [
+      "audit-350181fca5ac25581189",
+      "audit-e4aa8d3bb4ed746965e7"
+    ],
+    "verify_links": [
+      {
+        "sample": "03-verification-failed.json",
+        "evaluationAuditId": "audit-e4aa8d3bb4ed746965e7",
+        "matches_evaluate": true
+      },
+      {
+        "sample": "04-verification-passed.json",
+        "evaluationAuditId": "audit-e4aa8d3bb4ed746965e7",
+        "matches_evaluate": true
+      }
+    ]
+  },
+  "events": [
+    {
+      "seq": 1,
+      "stage": "Evaluate Release Risk",
+      "sample": "01-safety-hold.json",
+      "call": "evaluate",
+      "endpoint": "https://nexus-sentinel-policy-adapter.onrender.com/api/v1/case/evaluate",
+      "timestamp_utc": "2026-07-01T00:04:45.519684+00:00",
+      "http_status": 200,
+      "error": null,
+      "request_body": {
+        "request_id": "req-sentinel-001",
+        "case_id": "CASE-2026-9821",
+        "stage": "AI Triage",
+        "requested_model": "stepfun-ai/step-3.7-flash:free",
+        "observed_model": "unknown-model-stub",
+        "privileged_remediation": true,
+        "human_approval": false,
+        "evidence": {
+          "change_ticket": null,
+          "model_manifest_hash": null,
+          "rollback_plan": null,
+          "test_report_hash": null
+        },
+        "evidence_notes": "Checking automated release trigger."
+      },
+      "response": {
+        "case_id": "CASE-2026-9821",
+        "verdict": "HOLD",
+        "risk_level": "HIGH",
+        "reason_codes": [
+          "MODEL_ECHO_MISMATCH",
+          "EVIDENCE_INCOMPLETE",
+          "HUMAN_APPROVAL_REQUIRED"
+        ],
+        "evidence_complete": false,
+        "required_human_role": "AI_RELEASE_MANAGER",
+        "recommended_stage": "Safety Hold",
+        "selected_model": null,
+        "audit_id": "audit-350181fca5ac25581189",
+        "policy_version": "sentinel-1.0"
+      },
+      "auditId": "audit-350181fca5ac25581189",
+      "verdict": "HOLD",
+      "verified": null,
+      "fingerprint": "8818adb27dfc444e95c4bebdde385ed78a24b3d7b8dde3f05ac9b4acda8f117d",
+      "evaluationAuditId": "audit-350181fca5ac25581189"
+    },
+    {
+      "seq": 2,
+      "stage": "Evaluate Release Risk",
+      "sample": "02-approved-remediation.json",
+      "call": "evaluate",
+      "endpoint": "https://nexus-sentinel-policy-adapter.onrender.com/api/v1/case/evaluate",
+      "timestamp_utc": "2026-07-01T00:04:46.962847+00:00",
+      "http_status": 200,
+      "error": null,
+      "request_body": {
+        "request_id": "req-sentinel-002",
+        "case_id": "CASE-2026-9821",
+        "stage": "Human Decision",
+        "requested_model": "stepfun-ai/step-3.7-flash:free",
+        "observed_model": "stepfun-ai/step-3.7-flash:free",
+        "privileged_remediation": true,
+        "human_approval": true,
+        "evidence": {
+          "change_ticket": "CHG-MAESTRO-902",
+          "model_manifest_hash": "sha256:0d65b791fac83b271a2e7c3b87a8f12a2e8c239d5b780ac9018bc98ef732a392",
+          "rollback_plan": "rollback-step-3.7-to-3.5-v1",
+          "test_report_hash": "sha256:880bc1a8f9024f2b904df2b10ab78f3de74bc1a8c90bfa51a2e9b89fa7a5d3f2"
+        },
+        "evidence_notes": "AI Release Manager approved after verifying rollback plan."
+      },
+      "response": {
+        "case_id": "CASE-2026-9821",
+        "verdict": "ALLOW",
+        "risk_level": "LOW",
+        "reason_codes": [],
+        "evidence_complete": true,
+        "required_human_role": null,
+        "recommended_stage": "Remediation",
+        "selected_model": "stepfun-ai/step-3.7-flash:free",
+        "audit_id": "audit-e4aa8d3bb4ed746965e7",
+        "policy_version": "sentinel-1.0"
+      },
+      "auditId": "audit-e4aa8d3bb4ed746965e7",
+      "verdict": "ALLOW",
+      "verified": null,
+      "fingerprint": "1ea6204fa4e9bea8fc5e85269c1cd90da54278d7e40c413a63009f7efa24a4cc",
+      "evaluationAuditId": "audit-e4aa8d3bb4ed746965e7"
+    },
+    {
+      "seq": 3,
+      "stage": "Verify Recovery",
+      "sample": "03-verification-failed.json",
+      "call": "verify",
+      "endpoint": "https://nexus-sentinel-policy-adapter.onrender.com/api/v1/case/verify",
+      "timestamp_utc": "2026-07-01T00:04:47.254284+00:00",
+      "http_status": 200,
+      "error": null,
+      "request_body": {
+        "request_id": "req-verify-001",
+        "case_id": "CASE-2026-9821",
+        "remediation_id": "rem-sentinel-01",
+        "evaluation_audit_id": "audit-e4aa8d3bb4ed746965e7",
+        "attempt": 1,
+        "checks": {
+          "model_identity_matches": false,
+          "policy_tests_pass": true,
+          "service_health_pass": true,
+          "evidence_attached": true
+        }
+      },
+      "response": {
+        "case_id": "CASE-2026-9821",
+        "verified": false,
+        "reason_codes": [
+          "MODEL_IDENTITY_STILL_MISMATCHED"
+        ],
+        "recommended_stage": "Rework Required",
+        "reentry_stage": "Investigation",
+        "attempt": 1,
+        "max_attempts": 3,
+        "retry_exhausted": false,
+        "evaluation_audit_id": "audit-e4aa8d3bb4ed746965e7",
+        "audit_id": "audit-d7793d20135c19f7bf5d",
+        "policy_version": "sentinel-1.0"
+      },
+      "auditId": "audit-d7793d20135c19f7bf5d",
+      "verdict": null,
+      "verified": false,
+      "fingerprint": null,
+      "evaluationAuditId": "audit-e4aa8d3bb4ed746965e7"
+    },
+    {
+      "seq": 4,
+      "stage": "Verify Recovery",
+      "sample": "04-verification-passed.json",
+      "call": "verify",
+      "endpoint": "https://nexus-sentinel-policy-adapter.onrender.com/api/v1/case/verify",
+      "timestamp_utc": "2026-07-01T00:04:47.517564+00:00",
+      "http_status": 200,
+      "error": null,
+      "request_body": {
+        "request_id": "req-verify-002",
+        "case_id": "CASE-2026-9821",
+        "remediation_id": "rem-sentinel-02",
+        "evaluation_audit_id": "audit-e4aa8d3bb4ed746965e7",
+        "attempt": 1,
+        "checks": {
+          "model_identity_matches": true,
+          "policy_tests_pass": true,
+          "service_health_pass": true,
+          "evidence_attached": true
+        }
+      },
+      "response": {
+        "case_id": "CASE-2026-9821",
+        "verified": true,
+        "reason_codes": [],
+        "recommended_stage": "Closure",
+        "reentry_stage": null,
+        "attempt": 1,
+        "max_attempts": 3,
+        "retry_exhausted": false,
+        "evaluation_audit_id": "audit-e4aa8d3bb4ed746965e7",
+        "audit_id": "audit-5edb88fc62d3e08ac3a2",
+        "policy_version": "sentinel-1.0"
+      },
+      "auditId": "audit-5edb88fc62d3e08ac3a2",
+      "verdict": null,
+      "verified": true,
+      "fingerprint": null,
+      "evaluationAuditId": "audit-e4aa8d3bb4ed746965e7"
+    },
+    {
+      "seq": null,
+      "stage": "Close-Loop Resolution",
+      "sample": "03-verification-failed.json",
+      "call": "resolution_marker",
+      "timestamp_utc": "2026-07-01T00:04:47.517599+00:00",
+      "resolved_from_verify_seq": 3,
+      "verified": false,
+      "recommended_stage": "Rework Required",
+      "reentry_stage": "Investigation",
+      "retry_exhausted": false,
+      "outcome": "REWORK_REENTRY"
+    },
+    {
+      "seq": null,
+      "stage": "Close-Loop Resolution",
+      "sample": "04-verification-passed.json",
+      "call": "resolution_marker",
+      "timestamp_utc": "2026-07-01T00:04:47.517603+00:00",
+      "resolved_from_verify_seq": 4,
+      "verified": true,
+      "recommended_stage": "Closure",
+      "reentry_stage": null,
+      "retry_exhausted": false,
+      "outcome": "CLOSURE"
+    }
+  ]
+}

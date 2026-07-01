@@ -1,6 +1,7 @@
 # NEXUS Sentinel Recovery
 
 A governed AI-release incident recovery workflow for **UiPath AgentHack Track 2: Maestro BPMN**.
+<img width="1221" height="655" alt="chrome_b55Io8ZlYN" src="https://github.com/user-attachments/assets/cce38a65-2577-4267-b125-b39d83ddfc8f" />
 
 UiPath Automation Cloud is the control and execution plane. The NEXUS Sentinel Policy Adapter is a deterministic advisory service that evaluates release evidence, returns `ALLOW`, `HOLD`, or `DENY`, and emits an auditable case transition. It never performs remediation.
 
@@ -83,11 +84,15 @@ Deploy the container to a public HTTPS service, then configure `SENTINEL_BASE_UR
 
 ## Demo Video
 
-[Local MP4 with AI narration and burned captions](assets/video/NEXUS-Sentinel-AgentHack-Demo.mp4)
+[Local MP4 with AI narration and burned captions](
+
+https://github.com/user-attachments/assets/95e50e04-2dc8-48e5-90f3-7ee52e472dfc
+
+)
 
 ## Presentation Deck
 
-[Google Slides Presentation](https://docs.google.com/presentation/d/16B00BABNwdsIpOygh_VtlineLtHP6P8VHPyjqxlnMP0/edit)
+[Google Slides Presentation](https://docs.google.com/presentation/d/1J2eYo7MhnAZ9G4sv99mtZ8zBSmdpXKrnh8mi_pkJtvU/edit?usp=sharing)
 
 ## Safety Boundaries
 

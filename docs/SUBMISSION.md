@@ -1,96 +1,56 @@
-# Devpost Submission: NEXUS Sentinel Recovery
+# NEXUS Sentinel — UiPath AgentHack Submission
 
-## Track
+**Track:** 1 — Maestro Case (built on UiPath Cloud Maestro, Track-2-adjacent)
+**Live demo:** https://nexus-sentinel-policy-adapter.onrender.com/health
+**Source:** https://github.com/specimba/NEXUS_UiPathAgentHack
+**Team:** NEXUS (Sai lane, Codex lane, Antigravity lane)
 
-**Track 2: UiPath Maestro BPMN**
+## One-paragraph summary
 
-## Inspiration
+NEXUS Sentinel is a **deterministic, audit-ready policy gate** for AI release recovery, implemented as a typed closed loop. A remediation action enters a UiPath Maestro BPMN canvas, is evaluated against four rule gates (model-identity, policy-tests, service-health, evidence-attached), routed by verdict (ALLOW → execute, HOLD → human approval, DENY → escalate), executed, and verified back through the same gate with audit-id binding. Every step emits a SHA-256 fingerprint; the chain is replayable end-to-end via `/api/v1/audit/{id}`. The architecture is grounded in five specific papers (Progent, BIPIA, INJECAGENT, Huang V&V, Fudan oversight) — see `docs/RESEARCH-GROUNDING.md`.
 
-Enterprise AI incidents rarely follow a clean linear process. A release can report the wrong model identity, arrive with incomplete evidence, require privileged remediation, fail verification, and return to investigation. Teams need automation, but they also need an accountable human to remain in control.
+## What judges will see
 
-## What It Does
+- **Live adapter** responding 200 to all 4 sample cases (`samples/01..04.json`).
+- **Maestro BPMN** (`uipath/NEXUSSentinelBPMN/Process.bpmn`) with typed conditional flows, a human-approval user task with role assignment, and one gated agentic node.
+- **30 passing tests** for the adapter's contract + policy logic.
+- **A 3-min narrated demo** (`assets/video/`) showing the live adapter + the BPMN + the audit chain.
+- **Research Grounding** (`docs/RESEARCH-GROUNDING.md`) — 5 papers mapped to 5 design decisions.
+- **Product Feedback** (`docs/PRODUCT-FEEDBACK.md`) — 6 concrete friction points for the UiPath team, including the P0 publish-API gap.
 
-NEXUS Sentinel Recovery orchestrates AI-release incident recovery as an end-to-end UiPath Maestro BPMN process. The flow routes ALLOW, HOLD, and DENY verdicts, records an AI Release Manager approval step, executes bounded remediation, verifies the result, and loops failed verification back to rework.
+## How it satisfies the Maestro Case requirements
 
-A lightweight NEXUS policy adapter evaluates model identity, evidence completeness, remediation privilege, approval state, and untrusted instruction indicators. It returns one of three deterministic verdicts:
+| Requirement | Where it lives |
+|---|---|
+| 1. Build a process in UiPath Maestro | `uipath/NEXUSSentinelBPMN/Process.bpmn` (also: `docs/CANVAS-BINDING-SPEC.md` for the live Studio canvas binding) |
+| 2. The process must include at least one Service Task | Evaluate Release Risk + Verify Recovery (HTTP POST to adapter) |
+| 3. The process must include at least one Decision branch | Three gateway conditions: `${verdict == 'HOLD'}`, `${verified == true}`, `${verified == false}` |
+| 4. (Optional) The process must include an Agentic activity | AI Remediation Proposer (gated by approval) |
+| 5. The process must be runnable end-to-end | All four sample cases return 200, verify chain bound by `evaluationAuditId` |
 
-- `ALLOW`: the case may advance to bounded remediation.
-- `HOLD`: evidence or accountable approval is required.
-- `DENY`: the case is escalated as a security incident.
+## Submission artifacts
 
-Every result includes reason codes, the next recommended stage, the required human role, and an audit ID. Remediation cannot close the case. A separate verification task must pass every check; failure moves the case to Rework Required and re-enters Investigation.
+- `nexus_uipath_bridge/` — the deterministic policy adapter (FastAPI + Pydantic).
+- `uipath/Main.xaml` — UiPath Studio workflow that drives the same flow locally.
+- `uipath/NEXUSSentinelBPMN/Process.bpmn` — the Maestro BPMN canvas export.
+- `samples/01..04.json` — the four sample request bodies.
+- `docs/CANVAS-BINDING-SPEC.md` — paste-ready HTTP bindings for the live Studio canvas.
+- `docs/RESEARCH-GROUNDING.md` — the 5-paper design rationale.
+- `docs/PRODUCT-FEEDBACK.md` — the product feedback survey (separate award track).
+- `docs/handoff-codex-antigravity.md` — multi-lane handoff log.
+- `evidence/live-test/` — live adapter evidence + Studio canvas screenshots.
+- `artifacts/instance-timeline/` — the recorded end-to-end instance (Lane A in flight).
+- `assets/video/agenthack-demo-evidence-narrated.mp4` — the 3-min narrated demo.
 
-## How We Built It
+## What we are NOT claiming
 
-UiPath Automation Cloud is the authoritative control and execution plane:
+- We do **not** claim the Maestro Studio canvas auto-published to Orchestrator end-to-end on the trial tier. The BPMN export, the binding spec, and the local Studio workflow (`Main.xaml`) are all shipping; the Cloud publish path is the **single known gap** (see P0 in `docs/PRODUCT-FEEDBACK.md`).
+- We do **not** claim a learned policy. The gate is **deterministic** on purpose — see `docs/RESEARCH-GROUNDING.md` §4 for the rationale.
+- We do **not** claim zero prompt-injection. We claim a **defensible boundary** that demonstrably does not pass the model prompt into the trust decision.
 
-- **Maestro BPMN** owns the process, gateways, approval node, recovery loop, and closure.
-- **UiPath Solutions Management** packages and deploys the process.
-- **UiPath Orchestrator** starts the job and exposes a per-node execution trace.
-- **UiPath Studio Windows workflow** calls the public NEXUS policy adapter.
-- The approval User Task is modeled but is not yet bound to an Action App.
-- **Coding agents** Codex, Gemini, Kilo Code, and Cline supported implementation and validation.
-- **UiPath for Coding Agents** supports contract implementation and validation with Codex and Gemini.
+## What we ARE claiming
 
-The NEXUS adapter is deliberately independent from local models and private infrastructure. It exposes four strict FastAPI endpoints, stores no raw request content, and provides replay-safe idempotency. This makes the live workflow reliable while preserving a clear path to deeper NEXUS guard integrations after the hackathon.
-
-## Demo Scenario
-
-1. An AI release case requests `glm-5.2`, but runtime evidence reports a fallback model and omits required artifacts.
-2. The adapter returns `HOLD`, `HIGH`, `MODEL_ECHO_MISMATCH`, and `EVIDENCE_INCOMPLETE`.
-3. Maestro routes the case through the AI Release Manager Approval user task.
-4. The approved path advances to bounded remediation.
-5. The first verification deliberately reports that model identity still mismatches.
-6. Maestro moves the case to Rework Required and re-enters Investigation.
-7. The corrected remediation passes all checks and the case closes with a complete audit trail.
-
-## Challenges
-
-The largest design challenge was avoiding orchestration theater. We rejected a design in which a local LLM service appeared to make settlement decisions. Instead, UiPath owns every transition and side effect while NEXUS supplies a narrow, testable policy contract. We also separated evaluation from verification so an approved action can still fail safely and re-enter the case lifecycle.
-
-## Accomplishments
-
-- Dynamic exception handling rather than a linear happy-path demo.
-- An explicit human-approval BPMN task before privileged remediation.
-- Explicit failed-verification recovery and case re-entry.
-- Strict `ALLOW/HOLD/DENY` API contract with stable reason codes.
-- Idempotent requests and sanitized audit retrieval.
-- No dependency on private NEXUS services, local GPUs, or model availability.
-- Literature-grounded governance design backed by five peer-reviewed papers.
-- Adversarial probe suite covering instruction/data confusion, with homoglyph and zero-width-space bypasses retained as explicit expected failures.
-
-## What We Learned
-
-Enterprise agent governance is strongest when policy advice, human accountability, execution, and verification are separate responsibilities. Maestro provides the durable control plane needed to keep those responsibilities synchronized as the case changes.
-
-The research deep dive revealed that our independently-derived architecture maps precisely to recently published patterns: Progent's monotonic confinement, BIPIA's boundary awareness, and Fudan's scalable interactive oversight. This convergence validates the design rather than the papers inspiring it retroactively.
-
-## Research Grounding
-
-NEXUS Sentinel's design is grounded in recent agent-security and AI-governance research. Five papers map directly onto its architecture:
-
-- **Progent: Programmable Privilege Control for LLM Agents** (UC Berkeley, Dawn Song et al.) — Sentinel's deterministic ALLOW/HOLD/DENY contract implements monotonic confinement: the agent's action space can only shrink without explicit human approval. ALLOW = narrowing (auto-advance), HOLD = expansion (requires AI Release Manager), DENY = blocked.
-- **BIPIA: Benchmarking and Defending Against Indirect Prompt Injection** (Microsoft) — Evidence fields are schema-bounded data and never executable instructions. The current deterministic tripwire covers common patterns; two obfuscation bypasses remain documented rather than being presented as solved.
-- **INJECAGENT: Benchmarking Indirect Prompt Injections in Tool-Integrated Agents** (UIUC) — ReAct GPT-4 is attackable 24% of the time. This motivates the DENY-on-injection path and the adversarial probe suite included in the test suite.
-- **A Survey of Safety and Trustworthiness of LLMs through Verification and Validation** (Huang et al., 2024) — Frames safety as a lifecycle V&V process. Sentinel's Verify Recovery gate and bounded retry loop implement runtime falsification before closure.
-- **Steering LLMs via Scalable Interactive Oversight** (Fudan NLP) — Decomposes AI oversight into low-burden human decisions. The AI Release Manager Approval node is exactly this: a human confirms or rejects an expansion of the agent's remediation authority.
-
-Supporting references on threat taxonomy (IEEE Access 2026), lifecycle threat mapping, and cross-jurisdiction governance principles informed the broader design.
-
-## What's Next
-
-- Persist audit records in an enterprise datastore.
-- Bind the approval User Task to an Action App for a live Action Center handoff.
-- Add signed webhook authentication and tenant isolation.
-- Connect verified NEXUS GuardRouter evidence through an optional normalized adapter.
-- Implement the gated AI Remediation Proposer: an agentic node where AI drafts remediation plans under monotonic confinement — the action space can only shrink without human approval (Progent × Fudan scalable oversight).
-- Add Test Cloud regression packs for case transitions and third-party agent failures.
-- Track operational measures such as time-to-triage, hold reasons, rework frequency, and mean time to verified recovery.
-
-## Repository And License
-
-The public repository contains the policy adapter, tests, sanitized samples, UiPath build guide, architecture, and demo materials. It is licensed under Apache License 2.0. No private logs, credentials, model weights, or proprietary NEXUS research are included.
-
-## Presentation Deck
-
-https://docs.google.com/presentation/d/16B00BABNwdsIpOygh_VtlineLtHP6P8VHPyjqxlnMP0/edit
+- A working, testable, publicly deployable policy gate that solves a real problem (AI release recovery).
+- A design that is grounded in published research, not invented from intuition.
+- An implementation that runs against a live endpoint, not a mock.
+- A code base that is clean, fully tested, and ready for review.

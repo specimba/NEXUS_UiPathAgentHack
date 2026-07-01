@@ -84,11 +84,7 @@ Deploy the container to a public HTTPS service, then configure `SENTINEL_BASE_UR
 
 ## Demo Video
 
-[Local MP4 with AI narration and burned captions](
-
 https://github.com/user-attachments/assets/95e50e04-2dc8-48e5-90f3-7ee52e472dfc
-
-)
 
 ## Presentation Deck
 
